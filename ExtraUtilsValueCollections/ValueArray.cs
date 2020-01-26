@@ -19,9 +19,9 @@ namespace ExtraUtils.ValueCollections
     [DebuggerTypeProxy(typeof(ValueArrayDebugView<>))]
     public ref struct ValueArray<T>
     {
-        private readonly T[]? _arrayFromPool;
-        private readonly Span<T> _span;
-        private readonly int _length;
+        internal readonly T[]? _arrayFromPool;
+        internal readonly Span<T> _span;
+        internal readonly int _length;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ValueArray{T}" /> struct.
@@ -53,6 +53,13 @@ namespace ExtraUtils.ValueCollections
             _arrayFromPool = ArrayPool<T>.Shared.Rent(initialCapacity);
             _span = _arrayFromPool;
             _length = initialCapacity;
+        }
+
+        internal ValueArray(T[] arrayFromPool, int length)
+        {
+            _arrayFromPool = arrayFromPool;
+            _span = arrayFromPool;
+            _length = length;
         }
 
         /// <summary>
@@ -221,13 +228,13 @@ namespace ExtraUtils.ValueCollections
         /// </summary>
         public ref struct Enumerator
         {
-            private readonly ValueArray<T> _array;
+            private readonly Span<T> _span;
             private readonly int _length;
             private int _pos;
 
             internal Enumerator(ref ValueArray<T> array)
             {
-                _array = array;
+                _span = array._span;
                 _length = array._length;
                 _pos = -1;
             }
@@ -244,7 +251,7 @@ namespace ExtraUtils.ValueCollections
                         throw new IndexOutOfRangeException();
                     }
 
-                    return ref _array[_pos];
+                    return ref _span[_pos];
                 }
             }
 

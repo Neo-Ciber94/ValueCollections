@@ -306,12 +306,36 @@ namespace ExtraUtils.ValueCollections
         }
 
         /// <summary>
-        /// Creates a new array with the elements of this instance.
+        /// Creates a new array with the elements of this list.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A new array with this list elements.</returns>
         public T[] ToArray()
         {
             return _span.Slice(0, _count).ToArray();
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ValueArray{T}"/> with the elements of this list.
+        /// </summary>
+        /// <returns>A new array with this list elements.</returns>
+        public ValueArray<T> ToValueArray()
+        {
+            ValueArray<T> array = new ValueArray<T>(_count);
+            _span.Slice(0, _count).CopyTo(array._span);
+            return array;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ValueArray{T}"/> with the elements of this list and then dispose this instance.
+        /// </summary>
+        /// <returns>A new array with this list elements.</returns>
+        public ValueArray<T> ToValueArrayAndDispose()
+        {
+            ValueArray<T> array = new ValueArray<T>(_arrayFromPool!, _count);
+
+            // Just invalidates this instance
+            this = default;
+            return array;
         }
 
         /// <summary>
@@ -411,13 +435,13 @@ namespace ExtraUtils.ValueCollections
         /// </summary>
         public ref struct Enumerator
         {
-            private readonly ValueList<T> _list;
+            private readonly Span<T> _span;
             private readonly int _length;
             private int _pos;
 
             internal Enumerator(ref ValueList<T> list)
             {
-                _list = list;
+                _span = list._span;
                 _length = list._count;
                 _pos = -1;
             }
@@ -434,7 +458,7 @@ namespace ExtraUtils.ValueCollections
                         throw new IndexOutOfRangeException();
                     }
 
-                    return ref _list[_pos];
+                    return ref _span[_pos];
                 }
             }
 
