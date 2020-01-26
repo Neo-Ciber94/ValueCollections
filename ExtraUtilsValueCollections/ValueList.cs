@@ -28,6 +28,11 @@ namespace ExtraUtils.ValueCollections
         /// <param name="initialBuffer">The initial buffer.</param>
         public ValueList(Span<T> initialBuffer)
         {
+            if (initialBuffer.IsEmpty)
+            {
+                throw new ArgumentException("Buffer cannot be empty", nameof(initialBuffer));
+            }
+
             _span = initialBuffer;
             _arrayFromPool = null;
             _count = 0;
@@ -39,6 +44,11 @@ namespace ExtraUtils.ValueCollections
         /// <param name="initialCapacity">The initial capacity.</param>
         public ValueList(int initialCapacity)
         {
+            if(initialCapacity <= 0)
+            {
+                throw new ArgumentException("Initial capacity should be greater than 0");
+            }
+
             _arrayFromPool = ArrayPool<T>.Shared.Rent(initialCapacity);
             _span = _arrayFromPool;
             _count = 0;
@@ -81,11 +91,6 @@ namespace ExtraUtils.ValueCollections
         public int Capacity => _span.Length;
 
         /// <summary>
-        /// Gets a <see cref="ReadOnlySpan{T}"/> view to the elements of this list.
-        /// </summary>
-        public ReadOnlySpan<T> Span => _span.Slice(0, _count);
-
-        /// <summary>
         /// Gets a a reference to the element in the given index.
         /// </summary>
         public ref T this[int index]
@@ -100,6 +105,11 @@ namespace ExtraUtils.ValueCollections
                 return ref _span[index];
             }
         }
+
+        /// <summary>
+        /// Gets a <see cref="ReadOnlySpan{T}"/> view to the elements of this list.
+        /// </summary>
+        public ReadOnlySpan<T> Span => _span.Slice(0, _count);
 
         /// <summary>
         /// Adds the specified value to the list.
@@ -243,6 +253,18 @@ namespace ExtraUtils.ValueCollections
             }
 
             _count = 0;
+        }
+
+        /// <summary>
+        /// Determines whether this list contains the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the list contains the value; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Contains(T value)
+        {
+            return IndexOf(value) >= 0;
         }
 
         /// <summary>

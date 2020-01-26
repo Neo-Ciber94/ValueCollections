@@ -251,6 +251,20 @@ namespace ExtraUtils.ValueCollections.Tests
         }
 
         [Fact()]
+        public void ContainsTest()
+        {
+            using ValueList<int> list = ValueList<int>.CreateFrom(stackalloc int[] { 1, 2, 3, 4 });
+            Assert.True(list.Contains(1));
+            Assert.True(list.Contains(2));
+            Assert.True(list.Contains(3));
+            Assert.True(list.Contains(4));
+
+            Assert.False(list.Contains(0));
+            Assert.False(list.Contains(5));
+        }
+
+
+        [Fact()]
         public void LastIndexOfTest()
         {
             using ValueList<int> list = ValueList<int>.CreateFrom(stackalloc int[] { 1, 2, 3, 4 });
