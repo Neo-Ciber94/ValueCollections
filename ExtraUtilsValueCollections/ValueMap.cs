@@ -35,10 +35,10 @@ namespace ExtraUtils.ValueCollections
 
     /// <summary>
     /// Represents a stack-only collection of key-values.
-    /// </summary>
     /// <para>
-    /// <see cref="ValueMap{TKey, TValue}"/> make use of <see cref="ArrayPool{T}"/> to provides 0-allocations.
-    /// </para>
+    /// <see cref="ValueMap{TKey, TValue}"/> make use of <see cref="ArrayPool{T}"/> to provides zero allocations.
+    /// </para> 
+    /// </summary>
     /// <typeparam name="TKey">Type of the keys.</typeparam>
     /// <typeparam name="TValue">Type of the values.</typeparam>
     public ref struct ValueMap<TKey, TValue>

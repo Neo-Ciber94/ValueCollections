@@ -11,7 +11,7 @@ namespace ExtraUtils.ValueCollections
     /// <summary>
     /// Represents a stack-only container with a fixed size.
     /// <para>
-    /// <see cref="ValueArray{T}"/> make use of <see cref="ArrayPool{T}"/> to provides 0-allocations.
+    /// <see cref="ValueArray{T}"/> make use of <see cref="ArrayPool{T}"/> to provides zero allocations.
     /// </para>
     /// </summary>
     /// <typeparam name="T">Type of the elements.</typeparam>

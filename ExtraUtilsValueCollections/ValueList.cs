@@ -10,7 +10,7 @@ namespace ExtraUtils.ValueCollections
     /// <summary>
     /// Represents a stack-only collections of elements of the same type, and provides methods for add, remove and find values.
     /// <para>
-    /// <see cref="ValueList{T}"/> make use of <see cref="ArrayPool{T}"/> to provides 0-allocations.
+    /// <see cref="ValueList{T}"/> make use of <see cref="ArrayPool{T}"/> to provides zero allocations.
     /// </para>
     /// </summary>
     /// <typeparam name="T">Type of the elements.</typeparam>
@@ -339,9 +339,9 @@ namespace ExtraUtils.ValueCollections
         }
 
         /// <summary>
-        /// Gets an enumerator over the elements of this instance.
+        /// Gets an enumerator over the elements of this list.
         /// </summary>
-        /// <returns>An enumerator over the elements of this instance.</returns>
+        /// <returns>An enumerator over the elements of this list.</returns>
         public Enumerator GetEnumerator()
         {
             return new Enumerator(ref this);
@@ -351,7 +351,7 @@ namespace ExtraUtils.ValueCollections
         /// Gets a string representation of the elements of this list.
         /// </summary>
         /// <returns>
-        /// A <see cref="string" /> that represents this instance elements.
+        /// A <see cref="string" /> that represents this list elements.
         /// </returns>
         public override string ToString()
         {

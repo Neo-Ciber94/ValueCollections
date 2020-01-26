@@ -3,15 +3,16 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using NativeCollections.Utilites;
 
 namespace ExtraUtils.ValueCollections
 {
     /// <summary>
     /// Represents a stack-only FIFO (first-in first-out) collection of elements.
-    /// </summary>
     /// <para>
-    /// <see cref="ValueStack{T}"/> make use of <see cref="ArrayPool{T}"/> to provides 0-allocations.
-    /// </para
+    /// <see cref="ValueStack{T}"/> make use of <see cref="ArrayPool{T}"/> to provides zero allocations.
+    /// </para>
+    /// </summary>
     /// <typeparam name="T">Type of the elements.</typeparam>
     public ref struct ValueStack<T>
     {
@@ -221,6 +222,39 @@ namespace ExtraUtils.ValueCollections
         }
 
         /// <summary>
+        /// Creates a new array with the elements of this stack.
+        /// </summary>
+        /// <returns>A new array with this stack elements.</returns>
+        public T[] ToArray()
+        {
+            return _span.Slice(0, _count).ToArray();
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ValueArray{T}"/> with the elements of this stack.
+        /// </summary>
+        /// <returns>A new array with this stack elements.</returns>
+        public ValueArray<T> ToValueArray()
+        {
+            ValueArray<T> array = new ValueArray<T>(_count);
+            _span.Slice(0, _count).CopyTo(array._span);
+            return array;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ValueArray{T}"/> with the elements of this stack and then dispose this instance.
+        /// </summary>
+        /// <returns>A new array with this stack elements.</returns>
+        public ValueArray<T> ToValueArrayAndDispose()
+        {
+            ValueArray<T> array = new ValueArray<T>(_arrayFromPool!, _count);
+
+            // Just invalidates this instance
+            this = default;
+            return array;
+        }
+
+        /// <summary>
         /// Releases the resources used for this stack.
         /// </summary>
         public void Dispose()
@@ -233,6 +267,50 @@ namespace ExtraUtils.ValueCollections
             }
 
             this = default;
+        }
+
+        /// <summary>
+        /// Gets an enumerator over the elements of this stack.
+        /// </summary>
+        /// <returns>An enumerator over the elements of this stack.</returns>
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(ref this);
+        }
+
+        /// <summary>
+        /// Gets a string representation of the elements of this stack.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="string" /> that represents this stack elements.
+        /// </returns>
+        public override string ToString()
+        {
+            StringBuilder sb = StringBuilderCache.Acquire();
+            Enumerator enumerator = GetEnumerator();
+
+            sb.Append('[');
+            if (enumerator.MoveNext())
+            {
+                while (true)
+                {
+                    T current = enumerator.Current;
+                    sb.Append(current!.ToString());
+
+                    if (enumerator.MoveNext())
+                    {
+                        sb.Append(',');
+                        sb.Append(' ');
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            sb.Append(']');
+            return StringBuilderCache.ToStringAndRelease(ref sb!);
         }
 
         private void ResizeIfNeeded(int min)
