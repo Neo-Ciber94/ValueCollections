@@ -87,6 +87,28 @@ namespace ExtraUtils.ValueCollections
         }
 
         /// <summary>
+        /// Adds the specified values at the top of the stack.
+        /// </summary>
+        /// <param name="values">The values to add.</param>
+        public void PushAll(ReadOnlySpan<T> values)
+        {
+            if (values.IsEmpty)
+            {
+                return;
+            }
+
+            int length = values.Length;
+            ResizeIfNeeded(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                _span[_count + i] = values[i];
+            }
+
+            _count += length;
+        }
+
+        /// <summary>
         /// Gets the value at the top of the stack.
         /// </summary>
         /// <returns>The top value of the stack.</returns>
